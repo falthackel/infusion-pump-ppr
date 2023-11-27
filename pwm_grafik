@@ -1,0 +1,22 @@
+const int pwmPin = 0;  // Pin yang terhubung ke MOSFET
+const int pwmChannel = 0; // Channel PWM
+const int pwmResolution = 8; // Resolusi PWM (10-bit)1
+float pwmValue;    // Nilai PWM (0-255) untuk mengatur kecepatan
+float flowRate = 1564.8;
+
+void setup() {
+  // Inisialisasi PWM
+  ledcSetup(pwmChannel, 4, pwmResolution); // Frekuensi 1000 Hz
+  ledcAttachPin(pwmPin, pwmChannel);
+  Serial.begin(9600);// initialize serial motor
+}
+
+void loop() {
+  // Hitung nilai PWM berdasarkan flowrate
+  pwmValue = 4e-6 * flowRate * flowRate + 0.0328 * flowRate + 3.2225;
+  // Set nilai PWM untuk mengatur kecepatan peristaltik pump
+  ledcWrite(pwmChannel, pwmValue);
+  Serial.print("Speed: ");
+  Serial.println(pwmValue);
+  delay(250);  // Delay untuk mengatur frekuensi perubahan PWM
+};
