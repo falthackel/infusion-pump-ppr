@@ -5,11 +5,11 @@
 const int batteryPin = 34; // ADC1 channel 6
 
 // Constants for voltage divider
-const float R1 = 100000.0; // 100k ohms
-const float R2 = 39000.0;  // 39k ohms
+const float R1 = 220000.0; // 100k ohms
+const float R2 = 68000.0;  // 39k ohms
 
 // Maximum voltage of your battery
-const float maxVoltage = 12;
+const float maxVoltage = 12.6;
 
 // Constants for ADC calibration
 esp_adc_cal_characteristics_t adc_cal;
@@ -43,21 +43,20 @@ void setup() {
 void loop() {
   // Read battery voltage
   float batteryVoltage = readBatteryVoltage();
+  float voltageCallibrate = (batteryVoltage - 0.0203)/1.0049;
 
   // Print raw ADC value
   uint32_t adcValue = adc1_get_raw(ADC1_CHANNEL_6);
-  Serial.print("Raw ADC Value: ");
-  Serial.println(adcValue);
+  batteryPercentage = (100/3.9)*voltageCallibrate - (870/3.9);
 
-  // Print the voltage
-  Serial.print("Battery Voltage: ");
-  Serial.print(batteryVoltage, 2);
-  Serial.print("V\t");
+  if (batteryPercentage >= 100){
+    batteryPercentage = 100;
+  }
+  else if (batteryPercentage <= 0){
+    batteryPercentage = 0;
+  }
 
-  batteryPercentage = batteryVoltage*100/11.1;
-
-  Serial.print(batteryPercentage, 2);
-  Serial.println("%");
+  Serial.println(batteryPercentage, 2);
 
   delay(500); // Adjust the delay as needed
 }
